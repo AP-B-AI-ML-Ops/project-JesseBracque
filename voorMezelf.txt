@@ -1,0 +1,6 @@
+naar github pushen:
+
+git status
+git add .
+git commit -m "uitleg"
+git push origin main
