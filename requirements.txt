@@ -1,7 +1,0 @@
-jupyter==1.0.0
-scikit-learn==1.4.1
-pandas==2.2.1
-seaborn==0.13.2
-fastparquet==2024.2.0
-threadpoolctl==3.3.0
-botocore==1.34.63
