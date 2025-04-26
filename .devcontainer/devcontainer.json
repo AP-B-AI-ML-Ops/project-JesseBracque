@@ -1,0 +1,17 @@
+{
+    "name": "train-dev",
+    "dockerComposeFile": ["../../docker-compose.yml"], // locate the docker compose file
+    "service": "train-dev", // locate the service used in the docker compose file
+    "shutdownAction": "none",
+    "workspaceFolder": "/workspace/train", // locate the root folder for this service
+    "customizations": { // define which extensions we will need for our dev env
+        "vscode": {
+            "extensions": [
+                "ms-toolsai.jupyter"
+            ]
+        }
+    }
+}
+
+
+
