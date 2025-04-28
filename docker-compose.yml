@@ -23,6 +23,12 @@ services:
       - .:/workspace:cached
     command: sleep infinity
 
+  # prefect server
+  orchestration:
+    build: ./backend-service-orchestration
+    ports:
+      - 4200:4200
+
 volumes:
   # storage for persistent database usage
   postgres-data:
