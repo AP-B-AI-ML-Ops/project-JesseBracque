@@ -14,7 +14,7 @@ MODEL_NAME = "random-forest-regressor"
 
 RF_PARAMS = ['max_depth', 'n_estimators', 'min_samples_split', 'min_samples_leaf', 'random_state', 'n_jobs']
 
-mlflow.set_tracking_uri("http://127.0.0.1:5001")
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment(EXPERIMENT_NAME)
 # mlflow.sklearn.autolog() => geeft fout anders dus zet in commentaar
 
