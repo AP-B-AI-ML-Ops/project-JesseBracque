@@ -7,18 +7,14 @@ import mlflow
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
 
+from prefect import task, flow
+
 
 def load_pickle(filename: str):
     with open(filename, "rb") as f_in:
         return pickle.load(f_in)
     
 
-@click.command()
-@click.option(
-    "--data_path",
-    default="./output",
-    help="Location where the processed NYC taxi trip data was saved"
-)
 def run_train(data_path: str):
     # set the tracking uri for mlflow
     mlflow.set_tracking_uri("sqlite:///mlflow.db")

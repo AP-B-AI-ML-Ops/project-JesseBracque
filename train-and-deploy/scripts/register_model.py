@@ -8,6 +8,8 @@ from mlflow.tracking import MlflowClient
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
 
+from prefect import task, flow
+
 HPO_EXPERIMENT_NAME = "random-forest-hyperopt"
 EXPERIMENT_NAME = "random-forest-best-models"
 MODEL_NAME = "random-forest-regressor"
@@ -16,14 +18,15 @@ RF_PARAMS = ['max_depth', 'n_estimators', 'min_samples_split', 'min_samples_leaf
 
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment(EXPERIMENT_NAME)
-# mlflow.sklearn.autolog() => geeft fout anders dus zet in commentaar
 
 
+@task(log_prints=True, retries=4)
 def load_pickle(filename):
     with open(filename, "rb") as f_in:
         return pickle.load(f_in)
 
 
+@flow(log_prints=True)
 def train_and_log_model(data_path, params):
     X_train, y_train = load_pickle(os.path.join(data_path, "train.pkl"))
     X_val, y_val = load_pickle(os.path.join(data_path, "val.pkl"))
@@ -43,18 +46,7 @@ def train_and_log_model(data_path, params):
         mlflow.log_metric("test_rmse", test_rmse)
 
 
-@click.command()
-@click.option(
-    "--data_path",
-    default="./output",
-    help="Location where the processed NYC taxi trip data was saved"
-)
-@click.option(
-    "--top_n",
-    default=5,
-    type=int,
-    help="Number of top models that need to be evaluated to decide which one to promote"
-)
+@flow(log_prints=True)
 def run_register_model(data_path: str, top_n: int):
 
     client = MlflowClient()

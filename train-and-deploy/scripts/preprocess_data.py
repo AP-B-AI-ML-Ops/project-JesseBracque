@@ -5,12 +5,16 @@ import pandas as pd
 
 from sklearn.feature_extraction import DictVectorizer
 
+from prefect import task, flow
 
+
+@task(log_prints=True, retries=4)
 def dump_pickle(obj, filename: str):
     with open(filename, "wb") as f_out:
         return pickle.dump(obj, f_out)
-    
 
+ 
+@flow(log_prints=True)
 def split_and_read_data(path):
     df = pd.read_csv(path)
 
@@ -31,12 +35,14 @@ def split_and_read_data(path):
     return prepare_gold_data(train_df), prepare_gold_data(val_df), prepare_gold_data(test_df)
 
 
+@task(log_prints=True, retries=4)
 def prepare_gold_data(df, currency_col='EUR', new_col_name='gold_diff'):
     df = df.copy()
     df[new_col_name] = df[currency_col].diff().fillna(0)
     return df[['Date', currency_col, new_col_name]]
 
 
+@task(log_prints=True, retries=4)
 def prepare_regression_train_or_val_data(df, dv, train):
     df['Date'] = df['Date'].astype(str)
     categorical = ['Date']
@@ -52,17 +58,8 @@ def prepare_regression_train_or_val_data(df, dv, train):
 
     return X_data, Y_data
 
-@click.command() #moeten VOOR uit te voeren functie in main!!!!
-@click.option(
-    "--raw_data_path",
-    default="./data-files",
-    help="Location where the raw NYC taxi trip data was saved"
-)
-@click.option(
-    "--dest_path",
-    default="./output",
-    help="Location where the resulting files will be saved"
-)
+
+@flow(log_prints=True)
 def run_data_prep(raw_data_path: str = "data-files", dest_path: str = "output", dataset: str = "Daily.csv"):
     # Load parquet files
     df_train, df_val, df_test = split_and_read_data(
