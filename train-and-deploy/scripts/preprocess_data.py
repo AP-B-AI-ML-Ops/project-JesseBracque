@@ -83,4 +83,6 @@ def run_data_prep(raw_data_path: str = "data-files", dest_path: str = "output", 
 
 
 if __name__ == '__main__':
-    run_data_prep()
+    run_data_prep.serve(
+        name="preprocess_data",
+    )

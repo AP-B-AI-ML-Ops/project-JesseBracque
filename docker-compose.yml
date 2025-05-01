@@ -28,6 +28,7 @@ services:
     build: ./backend-service-orchestration
     ports:
       - 4200:4200
+      - 4201:4201 #might fix?
 
 volumes:
   # storage for persistent database usage

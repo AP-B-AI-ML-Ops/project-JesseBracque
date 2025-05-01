@@ -10,11 +10,13 @@ from sklearn.metrics import root_mean_squared_error
 from prefect import task, flow
 
 
+@task(log_prints=True, retries=4)
 def load_pickle(filename: str):
     with open(filename, "rb") as f_in:
         return pickle.load(f_in)
     
 
+@flow(log_prints=True)
 def run_train(data_path: str):
     # set the tracking uri for mlflow
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
