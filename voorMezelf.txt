@@ -1,0 +1,79 @@
+git add .
+git commit -m ""
+git push
+
+voor als er probleems is met rechten
+pip install --user -r .\requirements.txt
+
+
+
+
+
+
+
+
+voor MLFlow LABO 2:
+
+- vanuit labo file:
+
+rm -rf .git
+git init
+git remote add origin git@github...
+git add .
+git commit -m "bericht"
+git push -u origin main
+
+- in terminal:
+
+git clone git@github...
+
+- maak venv
+- activeer venv:
+
+source .venv/Scripts/activate
+
+- rebuild and reopen in container:
+- download imports in train and deploy map:
+
+pip install -r requirements.txt 
+
+- move naar train folder
+- zit geen docker-compose in dus:
+
+docker compose up --build -d
+
+- reopen in container om te doen werken
+- mlflow starten:
+
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+
+- uitvoeren preprocessing (in labo map):
+
+python scripts/preprocess_data.py --raw_data_path ./data --dest_path ./output
+
+- uitvoeren trainen:
+
+python scripts/train.py --data_path ./output
+
+- uitvoeren hpo:
+
+python scripts/hpo.py --data_path ./output
+
+- uitvoeren registreren:
+
+
+
+
+Labo 3:
+
+- als er nog geen prefect project is:
+prefect init => kies docker => zie in docker-compose naar naam van service en gebruik deze met tag latest
+
+- deployment bouwen:
+prefect deployment run naam_bestand.py:run_bestand -n deployment_naam -p work-pool-naam
+
+-- uitvoeren:
+- start server:
+prefect server start --host 0.0.0.0 --port 4200
+
+- deployment maken:

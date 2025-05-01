@@ -1,0 +1,2 @@
+voor commit:
+ - zeg dat: readme geupte wordt, training files erin worden gestoken, venv naam verandert, 
