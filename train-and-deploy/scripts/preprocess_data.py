@@ -1,55 +1,65 @@
+""" "Prepress data for model training and validation"""
+
 import os
 import pickle
-import click
+
 import pandas as pd
-
+from prefect import flow, task
 from sklearn.feature_extraction import DictVectorizer
-
-from prefect import task, flow
 
 
 @task(log_prints=True, retries=4)
 def dump_pickle(obj, filename: str):
+    """dumps object into a file"""
     with open(filename, "wb") as f_out:
         return pickle.dump(obj, f_out)
 
- 
+
 @flow(log_prints=True)
 def split_and_read_data(path):
+    """Split and reads the data for later usage"""
+    # pylint
     df = pd.read_csv(path)
 
     for col in df.columns:
         if col != "Date":
             df[col] = df[col].str.replace(",", "", regex=False)
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-    df['Date'] = pd.to_datetime(df['Date'])
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    df["Date"] = pd.to_datetime(df["Date"])
 
     total_len = len(df)
     train_end = int(0.7 * total_len)
     val_end = int(0.85 * total_len)
-    
+
     train_df = df.iloc[:train_end].sort_values("Date")
     val_df = df.iloc[train_end:val_end].sort_values("Date")
     test_df = df.iloc[val_end:].sort_values("Date")
 
-    return prepare_gold_data(train_df), prepare_gold_data(val_df), prepare_gold_data(test_df)
+    return (
+        prepare_gold_data(train_df),
+        prepare_gold_data(val_df),
+        prepare_gold_data(test_df),
+    )
 
 
 @task(log_prints=True, retries=4)
-def prepare_gold_data(df, currency_col='EUR', new_col_name='gold_diff'):
+def prepare_gold_data(df, currency_col="EUR", new_col_name="gold_diff"):
+    """Calculates the difference in gold value between two consecutive days"""
     df = df.copy()
     df[new_col_name] = df[currency_col].diff().fillna(0)
-    return df[['Date', currency_col, new_col_name]]
+    return df[["Date", currency_col, new_col_name]]
 
 
 @task(log_prints=True, retries=4)
 def prepare_regression_train_or_val_data(df, dv, train):
-    df['Date'] = df['Date'].astype(str)
-    categorical = ['Date']
-    numerical = ['EUR']
+    """Prepares the data for regression training or validation"""
+    # pylint: disable=[C0103]
+    df["Date"] = df["Date"].astype(str)
+    categorical = ["Date"]
+    numerical = ["EUR"]
 
-    data_dict = df[categorical + numerical].to_dict(orient='records')
-    Y_data = df['gold_diff'].values
+    data_dict = df[categorical + numerical].to_dict(orient="records")
+    Y_data = df["gold_diff"].values
 
     if train:
         X_data = dv.fit_transform(data_dict)
@@ -60,7 +70,13 @@ def prepare_regression_train_or_val_data(df, dv, train):
 
 
 @flow(log_prints=True)
-def run_data_prep(raw_data_path: str = "data-files", dest_path: str = "output", dataset: str = "Daily.csv"):
+def run_data_prep(
+    raw_data_path: str = "data-files",
+    dest_path: str = "output",
+    dataset: str = "Daily.csv",
+):
+    """Prepares the data for model training and validiation"""
+    # pylint: disable=[C0103]
     # Load parquet files
     df_train, df_val, df_test = split_and_read_data(
         os.path.join(raw_data_path, f"{dataset}")
@@ -82,5 +98,5 @@ def run_data_prep(raw_data_path: str = "data-files", dest_path: str = "output", 
     dump_pickle((X_test, y_test), os.path.join(dest_path, "test.pkl"))
 
 
-if __name__ == '__main__':
-    run_data_prep()
+if __name__ == "__main__":
+    run_data_prep("./data", "./output")

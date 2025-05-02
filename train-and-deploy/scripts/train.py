@@ -1,23 +1,25 @@
+"""Training the model for later usage"""
+
 import os
 import pickle
-import click
 
 import mlflow
-
+from prefect import flow, task
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
-
-from prefect import task, flow
 
 
 @task(log_prints=True, retries=4)
 def load_pickle(filename: str):
+    """loads pickle file from a file name"""
     with open(filename, "rb") as f_in:
         return pickle.load(f_in)
-    
+
 
 @flow(log_prints=True)
 def run_train(data_path: str):
+    """Training the model and log the output to mlflow"""
+    # pylint: disable=[C0103]
     # set the tracking uri for mlflow
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
 
@@ -27,7 +29,7 @@ def run_train(data_path: str):
     # start an mlflow run
     with mlflow.start_run():
         # set some mlflow tags (e.g. developer)
-        mlflow.set_tag("developer", "Jesse") #laatste twee zijn afkortng eigen naam
+        mlflow.set_tag("developer", "Jesse")  # laatste twee zijn afkortng eigen naam
 
         # log params in mlflow (e.g. path to the data for validation and training data)
         mlflow.log_param("train-data-path", "./data/green_tripdata_2021-01.parquet")
@@ -44,7 +46,7 @@ def run_train(data_path: str):
         # log the values for the regressor in mlflow
         mlflow.log_param("max_depth", max_depth)
         mlflow.log_param("random_state", random_state)
-    
+
         # Train the model
         rf = RandomForestRegressor(max_depth=max_depth, random_state=0)
         rf.fit(X_train, y_train)
@@ -56,5 +58,5 @@ def run_train(data_path: str):
         mlflow.log_metric("rmse", rmse)
 
 
-if __name__ == '__main__':
-    run_train()
+if __name__ == "__main__":
+    run_train("./output")

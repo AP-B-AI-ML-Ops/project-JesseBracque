@@ -1,20 +1,27 @@
+"""Registering the model for later usage"""
+
 import os
 import pickle
-import click
-import mlflow
 
+import mlflow
 from mlflow.entities import ViewType
 from mlflow.tracking import MlflowClient
+from prefect import flow, task
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
-
-from prefect import task, flow
 
 HPO_EXPERIMENT_NAME = "random-forest-hyperopt"
 EXPERIMENT_NAME = "random-forest-best-models"
 MODEL_NAME = "random-forest-regressor"
 
-RF_PARAMS = ['max_depth', 'n_estimators', 'min_samples_split', 'min_samples_leaf', 'random_state', 'n_jobs']
+RF_PARAMS = [
+    "max_depth",
+    "n_estimators",
+    "min_samples_split",
+    "min_samples_leaf",
+    "random_state",
+    "n_jobs",
+]
 
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment(EXPERIMENT_NAME)
@@ -22,12 +29,15 @@ mlflow.set_experiment(EXPERIMENT_NAME)
 
 @task(log_prints=True, retries=4)
 def load_pickle(filename):
+    """loads pickle file from a file name"""
     with open(filename, "rb") as f_in:
         return pickle.load(f_in)
 
 
 @flow(log_prints=True)
 def train_and_log_model(data_path, params):
+    """Train the model and log the output to mlflow"""
+    # pylint: disable=[C0103]
     X_train, y_train = load_pickle(os.path.join(data_path, "train.pkl"))
     X_val, y_val = load_pickle(os.path.join(data_path, "val.pkl"))
     X_test, y_test = load_pickle(os.path.join(data_path, "test.pkl"))
@@ -48,7 +58,7 @@ def train_and_log_model(data_path, params):
 
 @flow(log_prints=True)
 def run_register_model(data_path: str, top_n: int):
-
+    """Run the register model flow"""
     client = MlflowClient()
 
     experiment = client.get_experiment_by_name(HPO_EXPERIMENT_NAME)
@@ -56,7 +66,7 @@ def run_register_model(data_path: str, top_n: int):
         experiment_ids=experiment.experiment_id,
         run_view_type=ViewType.ACTIVE_ONLY,
         max_results=top_n,
-        order_by=["metrics.rmse ASC"]
+        order_by=["metrics.rmse ASC"],
     )
     for run in runs:
         train_and_log_model(data_path=data_path, params=run.data.params)
@@ -67,13 +77,13 @@ def run_register_model(data_path: str, top_n: int):
         experiment_ids=experiment.experiment_id,
         run_view_type=ViewType.ACTIVE_ONLY,
         max_results=1,
-        order_by=["metrics.test_rmse ASC"]
+        order_by=["metrics.test_rmse ASC"],
     )[0]
 
     # Register the best model by using the method register_model()
     # get the run id
     best_run_id = best_run.info.run_id
-    
+
     # get the model uri (using the run id)
     model_uri = f"runs:/{best_run_id}/model"
 
@@ -81,5 +91,5 @@ def run_register_model(data_path: str, top_n: int):
     mlflow.register_model(model_uri=model_uri, name=MODEL_NAME)
 
 
-if __name__ == '__main__':
-    run_register_model()
+if __name__ == "__main__":
+    run_register_model("./output", 10)
