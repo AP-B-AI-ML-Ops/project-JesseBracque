@@ -1,0 +1,33 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files #checken of grote files worden toegevoegd => kan voor problemen zorgen dus voor dubbel te checken
+  - repo: local
+    hooks: #meer info nodig
+      - id: isort
+        name: isort
+        language: system
+        entry: isort
+        types: [python]
+        args: ["--diff"]
+      - id: black
+        name: black
+        entry: black
+        language: system
+        types: [python]
+        args: ["--diff"]
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        arguments: [
+            "-rn", #only display message
+            "-sn", #dont display score
+          ]

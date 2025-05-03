@@ -77,3 +77,30 @@ prefect deployment run naam_bestand.py:run_bestand -n deployment_naam -p work-po
 prefect server start --host 0.0.0.0 --port 4200
 
 - deployment maken:
+
+
+
+
+
+
+labo 9: testing en standaarden
+
+TE DOEN: tests schrijven voor alle flows => test paar dingen
+
+uitvoeren voor kijken:
+
+black --diff fileNaam.py
+
+voor uitvoeren:
+
+black fileNaam.py
+
+
+- isort:
+uitvoeren voor kijken:
+
+isort --diff fileNaam.py
+
+voor uitvoeren:
+
+isort fileNaam.py
