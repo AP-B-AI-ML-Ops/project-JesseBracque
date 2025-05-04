@@ -16,3 +16,6 @@ EXPOSE 4200
 
 # Start the Prefect server
 CMD ["prefect", "server", "start", "--host", "0.0.0.0", "--port", "4200"]
+
+# Make worker
+# CMD ["prefect", "work-pool", "--type", "process", "work-pool-1", "--overwrite"]
