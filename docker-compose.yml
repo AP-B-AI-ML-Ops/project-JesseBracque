@@ -2,12 +2,12 @@ services:
   # PostgreSQL database for our services
   database:
     build:
-      context: ./backend-database
+      context: ./database
     restart: unless-stopped
     volumes:
       - postgres-data:/var/lib/postgresql/data
     env_file:
-      - ./backend-database/.env
+      - ./database/.env
 
   # MLFlow server for experiment tracking (uses the database)
   experiment-tracking:
