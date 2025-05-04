@@ -1,7 +1,7 @@
 services:
   # PostgreSQL database for our services
   database:
-    build: 
+    build:
       context: ./backend-database
     restart: unless-stopped
     volumes:
@@ -31,6 +31,24 @@ services:
       - 4200:4200
       - 4201:4201 #might fix?
 
+  # default login: admin/admin
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    volumes:
+      - grafana-data-config-datasources:/etc/grafana/provisioning/datasources:ro
+      - grafana-data-config-dashboards:/etc/grafana/provisioning/dashboards:ro
+      - grafana-data-dashboards:/opt/grafana/dashboards
+      - batch-data:/batch-data
+    ports:
+      - "3400:3000"
+
 volumes:
   # storage for persistent database usage
   postgres-data:
+  # storage for batch-data
+  batch-data:
+  # grafana volumes for persistent configuration and datastorage
+  grafana-data-config-datasources:
+  grafana-data-config-dashboards:
+  grafana-data-dashboards:

@@ -83,6 +83,15 @@ prefect server start --host 0.0.0.0 --port 4200
 
 
 
+
+
+
+labo 6: GRAFANA
+- al gedaan: grafana in compose toegevoegd
+- te doen: lijkt db nodig te hebben => regelen
+
+
+
 labo 9: testing en standaarden
 
 TE DOEN: tests schrijven voor alle flows => test paar dingen
