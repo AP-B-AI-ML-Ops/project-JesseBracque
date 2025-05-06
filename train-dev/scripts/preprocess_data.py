@@ -99,4 +99,4 @@ def run_data_prep(
 
 
 if __name__ == "__main__":
-    run_data_prep("./data", "./output")
+    run_data_prep("./data-files", "./output")

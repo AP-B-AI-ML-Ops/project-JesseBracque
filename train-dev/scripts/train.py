@@ -32,8 +32,7 @@ def run_train(data_path: str):
         mlflow.set_tag("developer", "Jesse")  # laatste twee zijn afkortng eigen naam
 
         # log params in mlflow (e.g. path to the data for validation and training data)
-        mlflow.log_param("train-data-path", "./data/green_tripdata_2021-01.parquet")
-        mlflow.log_param("valid-data-path", "./data/green_tripdata_2021-02.parquet")
+        mlflow.log_param("train-and-val-data-path", "./data-files/daily.csv")
 
         # Load training and validation data
         X_train, y_train = load_pickle(os.path.join(data_path, "train.pkl"))

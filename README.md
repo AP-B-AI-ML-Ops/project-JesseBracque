@@ -29,23 +29,6 @@ The next step is to install the required libraries. The library names and versio
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## VOOR MEZELF:
 
 ### labo2 gedeelte

@@ -62,6 +62,20 @@ python scripts/hpo.py --data_path ./output
 - uitvoeren registreren:
 
 
+NU uitvoeren:
+
+docker compose up --build
+mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./train-dev/mlruns --host 127.0.0.1 --port 5000
+scripts via terminal allemaal uitvoeren
+
+
+
+
+
+
+
+
+
 
 
 Labo 3:
@@ -86,9 +100,50 @@ prefect server start --host 0.0.0.0 --port 4200
 
 
 
+
+
+
+
+
+labo 4: web api
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 labo 6: GRAFANA
 - al gedaan: grafana in compose toegevoegd
 - te doen: lijkt db nodig te hebben => regelen
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

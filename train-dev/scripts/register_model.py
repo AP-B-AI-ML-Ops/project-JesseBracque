@@ -10,9 +10,9 @@ from prefect import flow, task
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
 
-HPO_EXPERIMENT_NAME = "random-forest-hyperopt"
-EXPERIMENT_NAME = "random-forest-best-models"
-MODEL_NAME = "random-forest-regressor"
+HPO_EXPERIMENT_NAME = "random-forest-hyperopt-MLOps-project-gold-values"
+EXPERIMENT_NAME = "random-forest-best-models-MLOps-project-gold-values"
+MODEL_NAME = "random-forest-regressor-MLOps-project-gold-values"
 
 RF_PARAMS = [
     "max_depth",
@@ -23,7 +23,7 @@ RF_PARAMS = [
     "n_jobs",
 ]
 
-mlflow.set_tracking_uri("http://127.0.0.1:5000")
+mlflow.set_tracking_uri("http://experiment-tracking:5000")
 mlflow.set_experiment(EXPERIMENT_NAME)
 
 
@@ -54,6 +54,9 @@ def train_and_log_model(data_path, params):
         mlflow.log_metric("val_rmse", val_rmse)
         test_rmse = root_mean_squared_error(y_test, rf.predict(X_test))
         mlflow.log_metric("test_rmse", test_rmse)
+
+        # Log the model
+        mlflow.sklearn.log_model(rf, artifact_path="model")
 
 
 @flow(log_prints=True)
