@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add the parent directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from prefect import flow
 from scripts.register_model import run_register_model
 
@@ -19,9 +25,9 @@ def registration_pipeline(
 if __name__ == "__main__":
     registration_pipeline.serve(
         name="model-registration",
-        work_pool_name="main",
         parameters={
             "data_path": "./output",
             "top_n": 10
-        }
+        },
+        cron="10 0 * * *",  # Daily at 00:10 AM
     )

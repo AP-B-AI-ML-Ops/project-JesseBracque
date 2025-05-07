@@ -1,3 +1,13 @@
+import inspect
+
+
+import sys
+import os
+
+# Add the parent directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import prefect
 from prefect import flow
 
 from scripts.preprocess_data import run_data_prep
@@ -15,8 +25,8 @@ def training_pipeline(
     # Initialize MLflow lazily at runtime
     def initialize_mlflow():
         import mlflow
-        mlflow.set_tracking_uri("http://experiment-tracking:5000")
-        mlflow.set_experiment("random-forest-hyperopt-MLOps-project-gold-values")
+        mlflow.set_tracking_uri("http://localhost:5000")
+        # .mlflow.set_experiment("random-forest-hyperopt-MLOps-project-gold-values")
     
     # Step 1: Preprocess data
     run_data_prep(
@@ -38,11 +48,11 @@ def training_pipeline(
 if __name__ == "__main__":
     training_pipeline.serve(
         name="complete-training-pipeline",
-        work_pool_name="main",
         parameters={
             "raw_data_path": "./data-files",
             "dest_path": "./output",
             "dataset": "Daily.csv",
             "num_trials": 5
-        }
+        },
+        cron="0 0 * * *",  # Daily at midnight
     )

@@ -19,12 +19,12 @@ services:
 
   train-dev:
     #might need to add extra dockerfile => look lab 9 compose
-    # build: ./train-dev
-    image: mcr.microsoft.com/devcontainers/python:1-3.12-bullseye
+    build: ./train-dev
+    # image: mcr.microsoft.com/devcontainers/python:1-3.12-bullseye
     volumes:
       - .:/workspace:cached
-    command: sleep infinity
     depends_on:
+      - experiment-tracking
       - orchestration
 
   # prefect server
@@ -32,7 +32,6 @@ services:
     build: ./backend-service-orchestration
     ports:
       - 4200:4200
-      - 4201:4201 #might fix?
 
   #API service for frontend
   frontend-api:
@@ -49,16 +48,18 @@ services:
     command: sleep infinity
 
   # default login: admin/admin
-  grafana:
-    image: grafana/grafana
-    restart: unless-stopped
-    volumes:
-      - grafana-data-config-datasources:/etc/grafana/provisioning/datasources:ro
-      - grafana-data-config-dashboards:/etc/grafana/provisioning/dashboards:ro
-      - grafana-data-dashboards:/opt/grafana/dashboards
-      - batch-data:/batch-data
-    ports:
-      - "3400:3000"
+  #grafana:
+  #  image: grafana/grafana
+  #  restart: unless-stopped
+  #  volumes:
+  #    - grafana-data-config-datasources:/etc/grafana/provisioning/datasources:ro
+  #    - grafana-data-config-dashboards:/etc/grafana/provisioning/dashboards:ro
+  #    - grafana-data-dashboards:/opt/grafana/dashboards
+  #    - batch-data:/batch-data
+  #  ports:
+  #    - "3400:3000"
+  #  networks:
+  #    - mlops-network
 
 volumes:
   # storage for persistent database usage
