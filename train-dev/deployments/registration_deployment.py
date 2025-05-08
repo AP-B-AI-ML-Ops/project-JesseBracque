@@ -13,8 +13,8 @@ def registration_pipeline(
     top_n: int = 10
 ):
     """Runs the model registration pipeline to register the best model"""
-    import mlflow
-    mlflow.set_tracking_uri("http://experiment-tracking:5000")
+    #import mlflow
+    #mlflow.set_tracking_uri("http://experiment-tracking:5000")
 
     # Register the best model from HPO runs
     run_register_model(

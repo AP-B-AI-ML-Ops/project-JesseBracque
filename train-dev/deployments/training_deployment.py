@@ -23,9 +23,9 @@ def training_pipeline(
 ):
     """Runs the complete training pipeline including preprocessing, training and HPO"""
     # Initialize MLflow lazily at runtime
-    def initialize_mlflow():
-        import mlflow
-        mlflow.set_tracking_uri("http://localhost:5000")
+    #def initialize_mlflow():
+    #    import mlflow
+    #    mlflow.set_tracking_uri("http://localhost:5000")
         # .mlflow.set_experiment("random-forest-hyperopt-MLOps-project-gold-values")
     
     # Step 1: Preprocess data
@@ -36,7 +36,7 @@ def training_pipeline(
     )
 
     # Step 2: Train basic model
-    initialize_mlflow()
+    #initialize_mlflow()
     run_train(data_path=dest_path)
 
     # Step 3: Run hyperparameter optimization
