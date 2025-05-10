@@ -10,9 +10,9 @@ from prefect import flow, task
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
 
-HPO_EXPERIMENT_NAME = "random-forest-hyperopt-MLOps-project-gold-values"
-EXPERIMENT_NAME = "random-forest-best-models-MLOps-project-gold-values"
-MODEL_NAME = "random-forest-regressor-MLOps-project-gold-values"
+HPO_EXPERIMENT_NAME = "gold-values-hpo-mlops-project"
+EXPERIMENT_NAME = "gold-values-experiment-mlops-project"
+MODEL_NAME = "gold-values-model-mlops-project"
 
 RF_PARAMS = [
     "max_depth",
@@ -38,15 +38,34 @@ def load_pickle(filename):
 def train_and_log_model(data_path, params):
     """Train the model and log the output to mlflow"""
     # pylint: disable=[C0103]
+    # Default parameters if not provided
+    default_params = {
+        "n_estimators": 100,
+        "max_depth": 10,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "random_state": 42,
+        "n_jobs": -1
+    }
+
+    # Update defaults with provided params, but only for valid RF parameters
+    model_params = default_params.copy()
+    if params:
+        # Only update with parameters that are in RF_PARAMS
+        valid_params = {k: v for k, v in params.items() if k in RF_PARAMS}
+        model_params.update(valid_params)
+
     X_train, y_train = load_pickle(os.path.join(data_path, "train.pkl"))
     X_val, y_val = load_pickle(os.path.join(data_path, "val.pkl"))
     X_test, y_test = load_pickle(os.path.join(data_path, "test.pkl"))
 
     with mlflow.start_run():
+        # Convert parameters to integers
         for param in RF_PARAMS:
-            params[param] = int(params[param])
+            if param in model_params:
+                model_params[param] = int(model_params[param])
 
-        rf = RandomForestRegressor(**params)
+        rf = RandomForestRegressor(**model_params)
         rf.fit(X_train, y_train)
 
         # Evaluate model on the validation and test sets
@@ -64,7 +83,7 @@ def run_register_model(data_path: str, top_n: int):
     """Run the register model flow"""
     client = MlflowClient()
 
-    experiment = client.get_experiment_by_name(HPO_EXPERIMENT_NAME)
+    experiment = client.get_experiment_by_name(EXPERIMENT_NAME)
     runs = client.search_runs(
         experiment_ids=experiment.experiment_id,
         run_view_type=ViewType.ACTIVE_ONLY,

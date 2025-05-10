@@ -9,4 +9,5 @@ prefect work-pool create --type process main --overwrite
 prefect worker start -p main &
 
 python ./deployments/training_deployment.py &
+sleep 5
 python ./deployments/registration_deployment.py

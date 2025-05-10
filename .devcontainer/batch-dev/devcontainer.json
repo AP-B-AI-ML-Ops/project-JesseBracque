@@ -1,0 +1,8 @@
+{
+  "name": "batch-dev",
+  "dockerComposeFile": ["../../docker-compose.yml"], // locate the docker compose file
+  "service": "batch-dev", // locate the service used in the docker compose file
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace/batch-dev/", // locate the root folder for this service
+  "overrideCommand": false
+}

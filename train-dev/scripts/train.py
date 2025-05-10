@@ -21,10 +21,10 @@ def run_train(data_path: str):
     """Training the model and log the output to mlflow"""
     # pylint: disable=[C0103]
     # set the tracking uri for mlflow
-    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_tracking_uri("http://experiment-tracking:5000") #lets test
 
     # set the experiment for mlflow
-    mlflow.set_experiment("gold-values")
+    mlflow.set_experiment("gold-values-experiment-mlops-project")
 
     # start an mlflow run
     with mlflow.start_run():

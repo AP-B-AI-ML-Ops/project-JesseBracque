@@ -1,5 +1,6 @@
 """main script to run the entire pipeline"""
-#pylint: disable=[W1510]
+
+# pylint: disable=[W1510]
 
 import subprocess
 
