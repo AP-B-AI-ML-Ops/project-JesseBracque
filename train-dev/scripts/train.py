@@ -20,8 +20,14 @@ def load_pickle(filename: str):
 def run_train(data_path: str):
     """Training the model and log the output to mlflow"""
     # pylint: disable=[C0103]
+    # Check if running locally or in container
+    if os.getenv("DOCKER_CONTAINER", "false") == "true":
+        tracking_uri = "http://experiment-tracking:5000"
+    else:
+        tracking_uri = "http://localhost:5000"
+    
     # set the tracking uri for mlflow
-    mlflow.set_tracking_uri("http://experiment-tracking:5000") #lets test
+    mlflow.set_tracking_uri(tracking_uri)
 
     # set the experiment for mlflow
     mlflow.set_experiment("gold-values-experiment-mlops-project")

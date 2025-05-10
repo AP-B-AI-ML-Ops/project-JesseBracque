@@ -108,6 +108,7 @@ def run_register_model(data_path: str, top_n: int):
 
     # get the model uri (using the run id)
     model_uri = f"runs:/{best_run_id}/model"
+    print(f"\n\n\n\nMODEL URI:{model_uri}\n\n\n\n")
 
     # register the model
     mlflow.register_model(model_uri=model_uri, name=MODEL_NAME)
