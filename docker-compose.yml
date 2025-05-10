@@ -48,11 +48,12 @@ services:
     command: sleep infinity
 
   # batch service for data processing => TO BE ADDED
-  batch-service:
-    image: mcr.microsoft.com/devcontainers/python:1-3.12-bullseye
+  batch-dev:
+    build: ./batch-dev
     volumes:
-      - .:/workspace:cached
-    command: sleep infinity
+      - ./batch-dev:/app
+    depends_on:
+      - orchestration
 
   web-api-dev:
     build: ./web-api-dev
