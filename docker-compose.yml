@@ -17,7 +17,7 @@ services:
     depends_on:
       - backend-database
     volumes:
-      - mlflow-artifacts:/mlflow/mlruns
+      - mlflow-artifacts:/mlruns
     environment:
       - MLFLOW_TRACKING_URI=http://experiment-tracking:5000
 
@@ -27,7 +27,7 @@ services:
     # image: mcr.microsoft.com/devcontainers/python:1-3.12-bullseye
     volumes:
       - .:/workspace:cached
-      - mlflow-artifacts:/mlflow/mlruns
+      - mlflow-artifacts:/mlruns
     depends_on:
       - experiment-tracking
       - orchestration
@@ -52,8 +52,13 @@ services:
     build: ./batch-dev
     volumes:
       - ./batch-dev:/app
+      - ./monitoring-reporting:/app/monitoring_reporting
+      - ./train-dev/output/dv.pkl:/app/dv.pkl
+      - ./train-dev/data-files:/app/data-files
+      - mlflow-artifacts:/mlruns
     depends_on:
       - orchestration
+      - backend-database
 
   web-api-dev:
     build: ./web-api-dev
@@ -63,7 +68,8 @@ services:
       - experiment-tracking
     volumes:
       - ./web-api-dev:/app
-      - mlflow-artifacts:/mlflow/mlruns
+      - mlflow-artifacts:/mlruns
+      - ./train-dev/output/dv.pkl:/app/dv.pkl
 
   # default login: admin/admin
   #grafana:

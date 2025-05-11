@@ -11,14 +11,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
 
 
-# Check if running locally or in container
-if os.getenv("DOCKER_CONTAINER", "false") == "true":
-    tracking_uri = "http://experiment-tracking:5000"
-else:
-    tracking_uri = "http://localhost:5000"
-    
 # set the tracking uri for mlflow
-mlflow.set_tracking_uri(tracking_uri)
+mlflow.set_tracking_uri("http://experiment-tracking:5000")
 mlflow.set_experiment("gold-values-experiment-mlops-project")
 
 

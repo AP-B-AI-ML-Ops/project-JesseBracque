@@ -6,10 +6,11 @@ RUN pip install -U pip
 WORKDIR /app
 
 # Copy everything needed into the container
-COPY . .
+COPY requirements.txt ./
 
 RUN pip install -r requirements.txt --upgrade
 
+COPY . .
 RUN chmod +x ./startPoolWorkersAndDeployments.sh
 
 # Set environment variable for Prefect (this is better than using RUN)

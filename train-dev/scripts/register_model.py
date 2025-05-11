@@ -28,6 +28,13 @@ mlflow.set_experiment(EXPERIMENT_NAME)
 
 
 @task(log_prints=True, retries=4)
+def dump_pickle(obj, filename: str):
+    """dumps object into a file"""
+    with open(filename, "wb") as f_out:
+        return pickle.dump(obj, f_out)
+
+
+@task(log_prints=True, retries=4)
 def load_pickle(filename):
     """loads pickle file from a file name"""
     with open(filename, "rb") as f_in:
@@ -108,7 +115,6 @@ def run_register_model(data_path: str, top_n: int):
 
     # get the model uri (using the run id)
     model_uri = f"runs:/{best_run_id}/model"
-    print(f"\n\n\n\nMODEL URI:{model_uri}\n\n\n\n")
 
     # register the model
     mlflow.register_model(model_uri=model_uri, name=MODEL_NAME)

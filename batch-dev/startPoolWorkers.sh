@@ -3,4 +3,4 @@
 prefect work-pool create --type process batch --overwrite
 prefect worker start -p batch &
 
-python /batch.py
+python /app/batch.py
