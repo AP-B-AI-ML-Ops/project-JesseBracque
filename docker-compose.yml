@@ -52,7 +52,6 @@ services:
     build: ./batch-dev
     volumes:
       - ./batch-dev:/app
-      - ./monitoring-reporting:/app/monitoring_reporting
       - ./train-dev/output/dv.pkl:/app/dv.pkl
       - ./train-dev/data-files:/app/data-files
       - mlflow-artifacts:/mlruns

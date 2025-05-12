@@ -5,3 +5,7 @@ psycopg==3.2.7
 psycopg_binary==3.2.7
 sqlalchemy==2.0.40
 sqlalchemy_utils==0.41.2
+evidently==0.7.3
+evidently==0.7.3
+numpy==2.2.5
+scikit-learn==1.6.1

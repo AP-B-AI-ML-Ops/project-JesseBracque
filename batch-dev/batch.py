@@ -6,16 +6,7 @@ import mlflow
 from mlflow.tracking import MlflowClient
 import pandas as pd
 from prefect import flow, task
-# Import the monitoring flow
-import sys
-sys.path.append('/app')  # Add the app directory to Python path
-
-try:
-    from monitoring_reporting.monitor import run_monitoring
-except ImportError as e:
-    print(f"Warning: Could not import monitoring flow. Make sure the monitoring module is accessible: {e}")
-    print("The monitoring directory should be mounted at /app/monitoring_reporting in the Docker container")
-    run_monitoring = None
+from monitor import run_monitoring
 
 # Set up MLflow
 mlflow.set_tracking_uri("http://experiment-tracking:5000")
@@ -31,6 +22,7 @@ def prepare_gold_data(df, currency_col="EUR", new_col_name="gold_diff"):
     df = df.dropna()
     return df
 
+@task(log_prints=True, retries=4)
 def load_vectorizer():
     """Load the DictVectorizer used during training"""
     try:
@@ -89,7 +81,7 @@ def get_latest_version():
         print(f"Error getting latest version: {e}")
         raise
 
-@flow(log_prints=True)
+@task(log_prints=True, retries=4)
 def load_model():
     """Load the latest version of the registered model from MLflow"""
     try:
@@ -151,14 +143,11 @@ def run_batch(filename: str, output_path: str):
     # Run monitoring after batch predictions
     try:
         print("Running model monitoring...")
-        if run_monitoring:
-            monitoring_result = run_monitoring()
-            if monitoring_result:
-                print("Monitoring completed successfully")
-            else:
-                print("Warning: Monitoring completed but returned no results")
+        monitoring_result = run_monitoring()
+        if monitoring_result:
+            print("Monitoring completed successfully")
         else:
-            print("Warning: Monitoring flow not available")
+            print("Warning: Monitoring completed but returned no results")
     except Exception as e:
         print(f"Warning: Error running monitoring: {e}")
 
@@ -168,7 +157,7 @@ if __name__ == "__main__":
     run_batch.serve(
         name="daily-gold-predictions",
         parameters={
-            "filename": "app/data-files/Daily.csv",
+            "filename": "data-files/Daily.csv",
             "output_path": "/batch-data/predictions"
         }
     )

@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 # Install dependencies
 RUN pip install mlflow psycopg2-binary
