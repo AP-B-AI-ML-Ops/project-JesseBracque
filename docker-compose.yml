@@ -9,6 +9,12 @@ services:
     env_file:
       - ./backend-database/.env
 
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+
   # MLFlow server for experiment tracking (uses the database)
   experiment-tracking:
     build: ./backend-service-experiment-tracking
@@ -47,7 +53,7 @@ services:
       - .:/workspace:cached
     command: sleep infinity
 
-  # batch service for data processing => TO BE ADDED
+  # batch service for data processing
   batch-dev:
     build: ./batch-dev
     volumes:
@@ -58,6 +64,7 @@ services:
     depends_on:
       - orchestration
       - backend-database
+      - train-dev
 
   web-api-dev:
     build: ./web-api-dev
@@ -71,18 +78,18 @@ services:
       - ./train-dev/output/dv.pkl:/app/dv.pkl
 
   # default login: admin/admin
-  #grafana:
-  #  image: grafana/grafana
-  #  restart: unless-stopped
-  #  volumes:
-  #    - grafana-data-config-datasources:/etc/grafana/provisioning/datasources:ro
-  #    - grafana-data-config-dashboards:/etc/grafana/provisioning/dashboards:ro
-  #    - grafana-data-dashboards:/opt/grafana/dashboards
-  #    - batch-data:/batch-data
-  #  ports:
-  #    - "3400:3000"
-  #  networks:
-  #    - mlops-network
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    volumes:
+      - grafana-data-config-datasources:/etc/grafana/provisioning/datasources:ro
+      - grafana-data-config-dashboards:/etc/grafana/provisioning/dashboards:ro
+      - grafana-data-dashboards:/opt/grafana/dashboards
+      - batch-data:/batch-data
+    ports:
+      - "3400:3000"
+    depends_on:
+      - batch-dev
 
 volumes:
   # storage for persistent database usage

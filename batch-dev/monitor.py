@@ -20,29 +20,38 @@ MODEL_NAME = "gold-values-model-mlops-project"
 # Database configuration
 POSTGRES_USER = "postgres"
 POSTGRES_PASSWORD = "password"
-POSTGRES_HOST = "localhost"
 POSTGRES_PORT = "5432"
-POSTGRES_DB = "mlflow_db"
+POSTGRES_DB = "batch_db"
 DB_URI = (
-    f"postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@backend-database:5432/{POSTGRES_DB}"
+    f"postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@backend-database:{POSTGRES_PORT}/{POSTGRES_DB}"
 )
 
-if not database_exists(DB_URI):
-    create_database(DB_URI)
 ENGINE = create_engine(DB_URI)
 
 
 @flow(log_prints=True)
 def generate_report():
-    """Generate a report for the model"""
-    year = 2021
-    month = 4
-
+    """Generate a report for the model by splitting the data in half by date order"""
+    # Use a CTE to assign row numbers ordered by date, then split
     reference_data = pd.read_sql(
-        f"SELECT * FROM mlflow_db WHERE year = {year} AND month = {1}", ENGINE
+        '''
+        WITH numbered AS (
+            SELECT *, ROW_NUMBER() OVER (ORDER BY date ASC) AS rn, COUNT(*) OVER() AS total_rows
+            FROM batch_data
+        )
+        SELECT * FROM numbered WHERE rn <= total_rows / 2
+        ''',
+        ENGINE
     )
     current_data = pd.read_sql(
-        f"SELECT * FROM mlflow_db WHERE year = {year} AND month = {month}", ENGINE
+        '''
+        WITH numbered AS (
+            SELECT *, ROW_NUMBER() OVER (ORDER BY date ASC) AS rn, COUNT(*) OVER() AS total_rows
+            FROM batch_data
+        )
+        SELECT * FROM numbered WHERE rn > total_rows / 2
+        ''',
+        ENGINE
     )
 
     report = Report(metrics=[DataDriftPreset()])
