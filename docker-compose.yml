@@ -82,9 +82,8 @@ services:
     image: grafana/grafana
     restart: unless-stopped
     volumes:
-      - grafana-data-config-datasources:/etc/grafana/provisioning/datasources:ro
-      - grafana-data-config-dashboards:/etc/grafana/provisioning/dashboards:ro
-      - grafana-data-dashboards:/opt/grafana/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
       - batch-data:/batch-data
     ports:
       - "3400:3000"
@@ -99,6 +98,4 @@ volumes:
   # MLflow artifacts storage
   mlflow-artifacts:
   # grafana volumes for persistent configuration and datastorage
-  grafana-data-config-datasources:
-  grafana-data-config-dashboards:
-  grafana-data-dashboards:
+  grafana-data:
